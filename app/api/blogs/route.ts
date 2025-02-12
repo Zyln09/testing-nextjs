@@ -13,7 +13,6 @@ export async function GET() {
     }
 }
 
-
 export async function POST(req: Request) {
     try {
         const { title, slug, content, featuredImage, author } = await req.json();
@@ -32,6 +31,7 @@ export async function POST(req: Request) {
 
         return NextResponse.json(newBlog[0], { status: 201 });
     } catch (error) {
+        console.log('POST error:', error);
         return NextResponse.json({ error: "Failed to create blog" }, { status: 500 });
     }
 }
