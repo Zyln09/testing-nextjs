@@ -1,20 +1,22 @@
-import { NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { db } from "@/drizzle/db";
 import { blogs } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
 
-// Fetch a single blog by slug
-export async function GET(req: Request, { params }: { params: { slug: string } }) {
-    try {
-        const blog = await db.select().from(blogs).where(eq(blogs.slug, params.slug));
+export async function GET(
+    request: NextRequest,
+    context: { params: Promise<{ slug: string }> }
+) {
+    // Properly await the params before using them
+    const { slug } = await context.params;
 
-        if (blog.length === 0) {
-            return NextResponse.json({ error: "Blog not found" }, { status: 404 });
-        }
+    const blog = await db.select()
+        .from(blogs)
+        .where(eq(blogs.slug, slug));
 
-        return NextResponse.json(blog[0]);
-    } catch (error) {
-        console.log(error);
-        return NextResponse.json({ error: "Failed to fetch blog" }, { status: 500 });
+    if (!blog.length) {
+        return Response.json({ error: "Blog not found" }, { status: 404 });
     }
+
+    return Response.json(blog[0]);
 }
