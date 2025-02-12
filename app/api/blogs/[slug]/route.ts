@@ -14,6 +14,7 @@ export async function GET(req: Request, { params }: { params: { slug: string } }
 
         return NextResponse.json(blog[0]);
     } catch (error) {
+        console.log(error);
         return NextResponse.json({ error: "Failed to fetch blog" }, { status: 500 });
     }
 }
